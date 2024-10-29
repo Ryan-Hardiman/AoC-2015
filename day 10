@@ -1,0 +1,26 @@
+library(tidyverse)
+data <- clipr::read_clip()
+
+data|>str_extract_all("([0-9])\\1+|[0-9]")
+
+do_string <- function(x){
+  paste0(nchar(x),x|>substr(1,1))
+}
+
+do_list <- function(x){
+  x |> map(do_string)|>unlist()|>paste0(collapse="")
+}
+
+
+
+make_list <- function(x,i){
+  print(i)
+  x |> str_extract_all("([0-9])\\1+|[0-9]")|>do_list()
+}
+
+
+part1 <- reduce(1:40, make_list, .init = data)
+part1|>nchar()
+
+part2 <- reduce(1:50, make_list, .init = data)
+part2|>nchar()
