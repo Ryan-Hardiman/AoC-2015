@@ -1,0 +1,24 @@
+library(tidyverse)
+data <- clipr::read_clip()
+#26^8 is large so reduce the problem (by assumption that first 3 chars are the same) In my case these are "HEP"
+paste0("hep", reduce(list(letters,letters,letters,letters,letters),\(x,y) map(x, ~paste0(.x,y))|>unlist()))->tst
+search <- tst[which(tst == data):length(tst)] #Reduce space to avoid earlier matches than input string. 
+
+distinct_pairs <- function(x){(x |> str_extract_all("(.)\\1")|>unlist()|>unique()|>length())==2}
+iol <- function(x){x |> str_extract("[iol]")|>is.na()}
+abc <- function(x){x |> str_extract("abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stv|tvw|vwx|wxy|xyz")|>is.na()}
+
+test_password <- function(prior, word){
+ if(all(distinct_pairs(word), iol(word), !abc(word))){return(done(word))}
+prior = prior +1
+print(prior)
+}
+
+reduce(search, test_password, .init = 1)->part1
+part1
+
+#Ended on XXYYZZ. Assume we can just skip to Q as XYZ is the continous 3 chars. And repeat same process. No need to reduce search space
+paste0("heq", reduce(list(letters,letters,letters,letters,letters),\(x,y) map(x, ~paste0(.x,y))|>unlist()))->search2
+
+reduce(search2, test_password, .init = 1)->part2
+part2
